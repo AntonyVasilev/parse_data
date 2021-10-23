@@ -12,7 +12,7 @@ dotenv.load_dotenv('.env')
 
 class CianParse:
     _headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36'}
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'}
 
     def __init__(self, start_url: str):
         self.start_url = start_url
@@ -30,7 +30,7 @@ class CianParse:
                 soup = bs4.BeautifulSoup(response.text, 'lxml')
                 return soup
             except Exception:
-                time.sleep(0.5)
+                time.sleep(1)
 
     def run(self, url=None):
         if not url:
@@ -45,6 +45,7 @@ class CianParse:
                 self.save(page_data)
 
             for pag_url in pagination:
+                time.sleep(0.5)
                 self.run(pag_url)
 
     @staticmethod
@@ -62,6 +63,11 @@ class CianParse:
             geo_data = soup.find('div', attrs={'data-name': 'Geo'}).span.get('content').split(',')
         except AttributeError:
             geo_data = None
+
+        try:
+            n_rooms = int(soup.find('div', attrs={'data-name': 'OfferTitle'}).h1.text[0])
+        except AttributeError:
+            n_rooms = ''
 
         summary_description = {
             s_data.findAll('div')[1].text: s_data.findAll('div')[0].text.split()
@@ -81,7 +87,7 @@ class CianParse:
         trans_data = self._get_transportation_dict(url, transportation)
 
         response = {
-            'n_rooms': int(soup.find('div', attrs={'data-name': 'OfferTitle'}).h1.text[0]),
+            'n_rooms': n_rooms,
             'territorial_division': geo_data[1] if geo_data else '',
             'district': ' '.join(geo_data[2].split()[1:]) if geo_data else '',
             'total_area': float('.'.join(summary_description['Общая'][0].split(',')))

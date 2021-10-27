@@ -1,6 +1,5 @@
 import os
 import time
-import datetime as dt
 import requests
 import bs4
 import pymongo
@@ -58,6 +57,7 @@ class CianParse:
 
     def _page_parse(self, url):
         soup = self._get(url)
+        print(1)
 
         try:
             geo_data = soup.find('div', attrs={'data-name': 'Geo'}).span.get('content').split(',')
@@ -66,7 +66,7 @@ class CianParse:
 
         try:
             n_rooms = int(soup.find('div', attrs={'data-name': 'OfferTitle'}).h1.text[0])
-        except AttributeError:
+        except (AttributeError, ValueError):
             n_rooms = ''
 
         summary_description = {
@@ -76,7 +76,8 @@ class CianParse:
         general_info = {li.findAll('span')[0].text: li.findAll('span')[1].text for li in
                         soup.findAll('li', attrs={'data-name': 'AdditionalFeatureItem'})}
         bathrooms = self._get_attrs_dict(general_info['Санузел']) if 'Санузел' in general_info.keys() else {}
-        balconies = self._get_attrs_dict(general_info['Балкон/лоджия']) if 'Балкон/лоджия' in general_info.keys() else {}
+        balconies = self._get_attrs_dict(
+            general_info['Балкон/лоджия']) if 'Балкон/лоджия' in general_info.keys() else {}
 
         house_data = {h_data.findAll('div')[0].text: h_data.findAll('div')[1].text for h_data in
                       soup.findAll('div', attrs={'data-name': 'Item'})}
@@ -91,17 +92,17 @@ class CianParse:
             'territorial_division': geo_data[1] if geo_data else '',
             'district': ' '.join(geo_data[2].split()[1:]) if geo_data else '',
             'total_area': float('.'.join(summary_description['Общая'][0].split(',')))
-                                if 'Общая' in summary_description.keys() else '',
+            if 'Общая' in summary_description.keys() else '',
             'living_space': float('.'.join(summary_description['Жилая'][0].split(',')))
-                                  if 'Жилая' in summary_description.keys() else '',
+            if 'Жилая' in summary_description.keys() else '',
             'kitchen_area': float('.'.join(summary_description['Кухня'][0].split(',')))
-                                  if 'Кухня' in summary_description.keys() else '',
+            if 'Кухня' in summary_description.keys() else '',
             'floor': int(summary_description['Этаж'][0]) if 'Этаж' in summary_description.keys() else '',
             'total_floors': int(summary_description['Этаж'][2]) if 'Этаж' in summary_description.keys() else '',
             'year_of_built': int(summary_description['Построен'][0]) if 'Построен'
                                                                         in summary_description.keys() else '',
             'celling_height': float('.'.join(general_info['Высота потолков'].split()[0].split(',')))
-                                    if 'Высота потолков' in general_info.keys() else '',
+            if 'Высота потолков' in general_info.keys() else '',
             'renovation_type': general_info['Ремонт'] if 'Ремонт' in general_info.keys() else '',
             'outside_view': general_info['Вид из окон'] if 'Вид из окон' in general_info.keys() else '',
             'n_balconies': int(balconies['балк']) if 'балк' in bathrooms.keys() else 0,
@@ -118,12 +119,24 @@ class CianParse:
             'garbage_chute': house_data['Мусоропровод'] if 'Мусоропровод' in house_data.keys() else '',
             'mins_to_subway_by_walk': trans_data['пешк'],
             'mins_to_subway_by_car': trans_data['маши'],
-            'mins_to_subway_by_trans': trans_data['тран']
+            'mins_to_subway_by_trans': trans_data['тран'],
+            'price': self._get_price(soup)
         }
         return response
 
     @staticmethod
-    def _get_transportation_dict(url, transportation: list) -> dict:
+    def _get_price(soup):
+        try:
+            raw_price = soup.find('div', attrs={'data-name': 'OfferTerms'}
+                                  ).find('span', attrs={'itemprop': 'price'}).get('content')
+            price = float(''.join(raw_price.split()[:-1]))
+        except (ValueError, AttributeError):
+            return 0.0
+        else:
+            return price
+
+    @staticmethod
+    def _get_transportation_dict(transportation: list) -> dict:
         current_dict = {
             'тран': [],
             'пешк': [],
@@ -132,7 +145,10 @@ class CianParse:
 
         for t_data in transportation:
             if t_data[-1][:4].isalpha():
-                current_dict[t_data[-1][:4]].append(int(t_data[1]))
+                try:
+                    current_dict[t_data[-1][:4]].append(int(t_data[1]))
+                except ValueError:
+                    continue
 
         result = {'тран': min(current_dict['тран']) if current_dict['тран'] else '',
                   'пешк': min(current_dict['пешк']) if current_dict['пешк'] else '',
@@ -144,11 +160,40 @@ class CianParse:
         return {vales.split()[1][:4]: vales.split()[0] for vales in attrs.split(',')}
 
     def save(self, post_data: dict):
-        collection = self.db['cian_moscow']
+        collection = self.db['cian_1_room']
         collection.insert_one(post_data)
 
 
 if __name__ == '__main__':
-    site_url = 'https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1&room2=1&room3=1'
-    parser = CianParse(site_url)
-    parser.run()
+    site_urls = [
+        'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=8000000&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1',
+        'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=8900000&minprice=8000001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1',
+        'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=9800000&minprice=8900001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1',
+        'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=11000000&minprice=9800001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1'
+    ]
+
+    for site_url in site_urls:
+        time.sleep(1800)
+        parser = CianParse(site_url)
+        parser.run()
+
+    # site_url = ''
+    # site_url = ''
+    # site_url = ''
+    # site_url = ''
+    # site_url = 'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=13000000&minprice=11000001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1'
+    # site_url = 'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=20000000&minprice=13000001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1'
+    # site_url = 'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&minprice=20000001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1'
+    # parser = CianParse(site_url)
+    # parser.run()
+
+    # site_urls = [
+    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=10000000&object_type%5B0%5D=1&offer_type=flat&region=1&room2=1',
+    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=11000000&minprice=10000001&object_type%5B0%5D=1&offer_type=flat&region=1&room2=1',
+    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=12000000&minprice=11000001&object_type%5B0%5D=1&offer_type=flat&region=1&room2=1',
+    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=13000001&minprice=12000001&object_type%5B0%5D=1&offer_type=flat&region=1&room2=1'
+    # ]
+    # for site_url in site_urls:
+    #     time.sleep(1800)
+    #     parser = CianParse(site_url)
+    #     parser.run()

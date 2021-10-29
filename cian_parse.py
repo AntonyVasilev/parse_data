@@ -57,7 +57,6 @@ class CianParse:
 
     def _page_parse(self, url):
         soup = self._get(url)
-        print(1)
 
         try:
             geo_data = soup.find('div', attrs={'data-name': 'Geo'}).span.get('content').split(',')
@@ -85,7 +84,7 @@ class CianParse:
 
         transportation = [span.text.split() for span in
                           soup.findAll('span', attrs={'class': 'a10a3f92e9--underground_time--1fKft'})]
-        trans_data = self._get_transportation_dict(url, transportation)
+        trans_data = self._get_transportation_dict(transportation)
 
         response = {
             'n_rooms': n_rooms,
@@ -165,17 +164,20 @@ class CianParse:
 
 
 if __name__ == '__main__':
-    site_urls = [
-        'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=8000000&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1',
-        'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=8900000&minprice=8000001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1',
-        'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=9800000&minprice=8900001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1',
-        'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=11000000&minprice=9800001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1'
-    ]
+    site_url = 'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=8000000&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1'
+    parser = CianParse(site_url)
+    parser.run()
 
-    for site_url in site_urls:
-        time.sleep(1800)
-        parser = CianParse(site_url)
-        parser.run()
+    # site_urls = [
+    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=8900000&minprice=8000001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1',
+    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=9800000&minprice=8900001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1',
+    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=11000000&minprice=9800001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1'
+    # ]
+    #
+    # for site_url in site_urls:
+    #     time.sleep(1800)
+    #     parser = CianParse(site_url)
+    #     parser.run()
 
     # site_url = ''
     # site_url = ''

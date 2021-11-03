@@ -159,19 +159,21 @@ class CianParse:
         return {vales.split()[1][:4]: vales.split()[0] for vales in attrs.split(',')}
 
     def save(self, post_data: dict):
-        collection = self.db['cian_1_room']
+        # collection = self.db['cian_1_room']
+        # collection = self.db['cian_2_rooms']
+        collection = self.db['cian_3_rooms']
         collection.insert_one(post_data)
 
 
 if __name__ == '__main__':
-    site_url = 'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=8000000&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1'
-    parser = CianParse(site_url)
-    parser.run()
-
     # site_urls = [
+    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=8000000&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1',
     #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=8900000&minprice=8000001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1',
     #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=9800000&minprice=8900001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1',
-    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=11000000&minprice=9800001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1'
+    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=11000000&minprice=9800001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1',
+    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=13000000&minprice=11000001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1',
+    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=20000000&minprice=13000001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1',
+    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&minprice=20000001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1'
     # ]
     #
     # for site_url in site_urls:
@@ -179,23 +181,38 @@ if __name__ == '__main__':
     #     parser = CianParse(site_url)
     #     parser.run()
 
-    # site_url = ''
-    # site_url = ''
-    # site_url = ''
-    # site_url = ''
-    # site_url = 'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=13000000&minprice=11000001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1'
-    # site_url = 'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=20000000&minprice=13000001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1'
-    # site_url = 'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&minprice=20000001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1'
-    # parser = CianParse(site_url)
-    # parser.run()
-
     # site_urls = [
     #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=10000000&object_type%5B0%5D=1&offer_type=flat&region=1&room2=1',
     #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=11000000&minprice=10000001&object_type%5B0%5D=1&offer_type=flat&region=1&room2=1',
     #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=12000000&minprice=11000001&object_type%5B0%5D=1&offer_type=flat&region=1&room2=1',
-    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=13000001&minprice=12000001&object_type%5B0%5D=1&offer_type=flat&region=1&room2=1'
+    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=13000001&minprice=12000001&object_type%5B0%5D=1&offer_type=flat&region=1&room2=1',
+    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=13000001&minprice=12000001&object_type%5B0%5D=1&offer_type=flat&region=1&room2=1',
+    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=16000000&minprice=14000001&object_type%5B0%5D=1&offer_type=flat&region=1&room2=1',
+    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=19000000&minprice=16000001&object_type%5B0%5D=1&offer_type=flat&region=1&room2=1',
+    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=24000000&minprice=19000001&object_type%5B0%5D=1&offer_type=flat&region=1&room2=1',
+    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=33000000&minprice=24000001&object_type%5B0%5D=1&offer_type=flat&region=1&room2=1',
+    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&minprice=33000001&object_type%5B0%5D=1&offer_type=flat&region=1&room2=1'
     # ]
-    # for site_url in site_urls:
-    #     time.sleep(1800)
-    #     parser = CianParse(site_url)
-    #     parser.run()
+
+    # site_urls = [
+    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=13000000&object_type%5B0%5D=1&offer_type=flat&region=1&room3=1',
+    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=15000000&minprice=13000001&object_type%5B0%5D=1&offer_type=flat&region=1&room3=1',
+    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=17000000&minprice=15000001&object_type%5B0%5D=1&offer_type=flat&region=1&room3=1',
+    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=20000000&minprice=17000001&object_type%5B0%5D=1&offer_type=flat&region=1&room3=1'
+    # ]
+
+    # site_urls
+
+    # site_urls = [
+    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=55000000&minprice=40000001&object_type%5B0%5D=1&offer_type=flat&region=1&room3=1'
+    # ]
+
+    site_urls = [
+        'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=90000000&minprice=55000001&object_type%5B0%5D=1&offer_type=flat&region=1&room3=1',
+        'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&minprice=90000001&object_type%5B0%5D=1&offer_type=flat&region=1&room3=1'
+    ]
+
+    for site_url in site_urls:
+        time.sleep(1800)
+        parser = CianParse(site_url)
+        parser.run()

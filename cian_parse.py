@@ -14,6 +14,10 @@ class CianParse:
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'}
 
     def __init__(self, start_url: str):
+        """
+        Инициализация экземпляра класса.
+        :param start_url: url-адресс страницы с которой начинать парсинг
+        """
         self.start_url = start_url
         self.page_done = set()
         client = pymongo.MongoClient(os.getenv('DATA_BASE'))
@@ -166,6 +170,11 @@ class CianParse:
 
 
 if __name__ == '__main__':
+    """
+    С каждой стартовой страницы парсер содирает до 1705 объявлений. Поэтому разбил объявления по цене и 
+    количеству комнат (1, 2 и 3) так, чтобы в выдаче было не больше 1700 объявлений.
+    """
+
     # site_urls = [
     #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=8000000&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1',
     #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=8900000&minprice=8000001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1',
@@ -175,11 +184,6 @@ if __name__ == '__main__':
     #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=20000000&minprice=13000001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1',
     #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&minprice=20000001&object_type%5B0%5D=1&offer_type=flat&region=1&room1=1'
     # ]
-    #
-    # for site_url in site_urls:
-    #     time.sleep(1800)
-    #     parser = CianParse(site_url)
-    #     parser.run()
 
     # site_urls = [
     #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=10000000&object_type%5B0%5D=1&offer_type=flat&region=1&room2=1',
@@ -194,20 +198,12 @@ if __name__ == '__main__':
     #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&minprice=33000001&object_type%5B0%5D=1&offer_type=flat&region=1&room2=1'
     # ]
 
-    # site_urls = [
-    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=13000000&object_type%5B0%5D=1&offer_type=flat&region=1&room3=1',
-    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=15000000&minprice=13000001&object_type%5B0%5D=1&offer_type=flat&region=1&room3=1',
-    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=17000000&minprice=15000001&object_type%5B0%5D=1&offer_type=flat&region=1&room3=1',
-    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=20000000&minprice=17000001&object_type%5B0%5D=1&offer_type=flat&region=1&room3=1'
-    # ]
-
-    # site_urls
-
-    # site_urls = [
-    #     'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=55000000&minprice=40000001&object_type%5B0%5D=1&offer_type=flat&region=1&room3=1'
-    # ]
-
     site_urls = [
+        'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=13000000&object_type%5B0%5D=1&offer_type=flat&region=1&room3=1',
+        'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=15000000&minprice=13000001&object_type%5B0%5D=1&offer_type=flat&region=1&room3=1',
+        'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=17000000&minprice=15000001&object_type%5B0%5D=1&offer_type=flat&region=1&room3=1',
+        'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=20000000&minprice=17000001&object_type%5B0%5D=1&offer_type=flat&region=1&room3=1'
+        'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=55000000&minprice=40000001&object_type%5B0%5D=1&offer_type=flat&region=1&room3=1',
         'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&maxprice=90000000&minprice=55000001&object_type%5B0%5D=1&offer_type=flat&region=1&room3=1',
         'https://www.cian.ru/cat.php?currency=2&deal_type=sale&engine_version=2&minprice=90000001&object_type%5B0%5D=1&offer_type=flat&region=1&room3=1'
     ]
